@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14"></script>
+</head>
+<body>
+  <div id="app">
+    <input type="text" v-model="keyword">
+    <button @click="search(keyword)">検索する</button>
+  </div>
+  <script>
+    let app = new Vue({
+      el: '#app',
+      data(){
+        return {
+          keyword:'',
+          searchResults:[]
+        }
+      },
+      methods:{
+        async search(keyword){
+          this.searchResults = []
+        // クエリーストリングを作成
+        const baseUrl = 'https://www.googleapis.com/books/v1/volumes?'
+          const params = {
+            q: `intitle:${keyword}`,
+            maxResults:40
+          }
+          const queryParams = new URLSearchParams(params)
+          console.log(baseUrl)
+          console.log(queryParams)
+          console.log(queryParams.get('maxResults'))
+          console.log(baseUrl + queryParams)
+
+        // fetchでJSON取得
+        const response = await fetch(baseUrl + queryParams)
+        .then( response => response.json())
+        console.log(response.items)
+        // 必要な情報を配列にpush
+        for(let book of response.items ){
+          let title = book.volumeInfo.title
+          let img = book.volumeInfo.imageLinks
+          let description = book.volumeInfo.description
+          this.searchResults.push({
+            title: title ? title : '',
+            image: img ? img.thumbnail : '',
+            description: description ? description.slice(0, 40) : ''
+          })
+        }
+      }
+      }  
+    })
+  </script>
+</body>
+</html>
