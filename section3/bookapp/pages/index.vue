@@ -75,3 +75,10 @@
     </v-col>
   </v-row>
 </template>
+<script>
+export default {
+  asyncData({ redirect }){
+    redirect('/book')
+  }
+}
+</script>
